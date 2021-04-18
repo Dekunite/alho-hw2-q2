@@ -138,6 +138,13 @@ bool enemiesCloseBy(int destNumber, list< pair<Building, int> > *adj) {
 	return false;
 }
 
+bool isEnemyTerritory(Building destination) {
+	if (destination.getname().compare(0,1,"E") == 0) {
+		return true;
+	}
+	return false;
+}
+
 void Graph::FindPrimMST(Building startvertex, vector<Building>* buildings, vector<Edge>* edges) {
 	priority_queue< pair<int, int>, vector< pair<int, int> >, greater< pair<int, int> > > pq;
 
@@ -191,6 +198,11 @@ void Graph::FindPrimMST(Building startvertex, vector<Building>* buildings, vecto
 				// of u.
 				Building destination = (*i).first;
 				int destinationWeight = (*i).second;
+
+				//Rule 3
+				if(isEnemyTerritory(destination)) {
+					continue;
+				}
 
 				//  If v is not in MST and weight of (u,v) is smaller
 				// than current key of v

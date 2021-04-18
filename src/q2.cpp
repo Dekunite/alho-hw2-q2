@@ -113,7 +113,17 @@ string getBuilding(int buildingNumber, vector<Building>* buildings) {
 			return (*it).getname();
 		}
 	}
+	return NULL;
+}
 
+Building getBuildingByName(string name, vector<Building>* buildings) {
+	vector<Building>::iterator it;
+	for (it = buildings->begin(); it != buildings->end(); ++it) {
+		if((*it).getname() == name) {
+			return (*it);
+		}
+	}
+	return *it;
 }
 
 bool enemiesCloseBy(int destNumber, list< pair<Building, int> > *adj) {
@@ -121,9 +131,11 @@ bool enemiesCloseBy(int destNumber, list< pair<Building, int> > *adj) {
 	// 'i' is used to get all adjacent vertices of a vertex
 	//list< pair<Building, int> >::iterator i;
 	for (i = adj[destNumber].begin(); i != adj[destNumber].end(); ++i){
-
+		if (((*i).first.getname().compare(0,1,"E") == 0) && (*i).second < 5) {
+			return true;
+		}
 	}
-
+	return false;
 }
 
 void Graph::FindPrimMST(Building startvertex, vector<Building>* buildings, vector<Edge>* edges) {
@@ -134,12 +146,22 @@ void Graph::FindPrimMST(Building startvertex, vector<Building>* buildings, vecto
 	// Create a vector for keys and initialize all
     // keys as infinite (INF)
 	vector<int> key(numberOfVertices, INF);
+	/*
 	vector<int>::iterator i;
 	int iCounter = 0;
 	for (i = key.begin(); i != key.end(); ++i){
 		cout << iCounter << ": " << *i <<endl;
 		iCounter++;
-	}
+	}*/
+
+	vector<int> parent(numberOfVertices, -1);
+	/*
+	vector<int>::iterator is;
+	iCounter = 0;
+	for (is = parent.begin(); is != parent.end(); ++is){
+		cout << iCounter << ": " << *is <<endl;
+		iCounter++;
+	}*/
 
 	// Insert source itself in priority queue and initialize
   // its key as 0.
@@ -179,6 +201,7 @@ void Graph::FindPrimMST(Building startvertex, vector<Building>* buildings, vecto
 					}
 					// Updating key of v
 					key[destination.getnumber()] = key[sourceNumber] + destinationWeight;
+					/*
 					vector<int>::iterator it;
 					int iCounter = 0;
 					cout << "-------key-------" << endl;
@@ -186,18 +209,47 @@ void Graph::FindPrimMST(Building startvertex, vector<Building>* buildings, vecto
 						cout << iCounter << ": " << *it <<endl;
 						iCounter++;
 					}
+					*/
 
 					pq.push(make_pair(key[destination.getnumber()], destination.getnumber()));
+					parent[destination.getnumber()] = sourceNumber;
+					/*
+					iCounter = 0;
+					cout << "-------parent-------" << endl;
+					for (is = parent.begin(); is != parent.end(); ++is){
+						cout << iCounter << ": " << *is <<endl;
+						iCounter++;
+					}
+					*/
 				}
 		}
-
 	}
 
 	// Print edges of MST using parent array
+	/*
 	for (int i = 0; i < numberOfVertices; ++i) {
 		int buildingNum = i;
 		cout << getBuilding(buildingNum,buildings) << ": " << key[i] <<endl;
+	}*/
+
+	//print path
+	Building lastBuilding = getBuildingByName("Mo",buildings);
+	int destNumber = lastBuilding.getnumber();
+	vector<int> shortestPath;
+	int sourceNumber = 0;
+	int totalLength = key[getBuildingByName("Mo",buildings).getnumber()];
+	//while destination not equals to start
+	while (destNumber != sourceNumber) {
+		shortestPath.push_back(destNumber);
+		destNumber = parent[destNumber];
 	}
+	shortestPath.push_back(sourceNumber);
+	reverse(shortestPath.begin(), shortestPath.end());
+	vector<int>::iterator it;
+	for (it = shortestPath.begin(); it != shortestPath.end(); ++it) {
+		cout << getBuilding(*it,buildings) << " "; 
+	}
+	cout << totalLength << "\n";
 
 
 }
@@ -273,20 +325,21 @@ int main() {
 		}
 
 
-    std::cout << source << " " << dest << " " << weight <<endl;
+    //std::cout << source << " " << dest << " " << weight <<endl;
   }
 	// Create the graph with the number of vertices that it will contain
+	/*
 	vector<Building>::iterator it;
 	for (it = buildings->begin(); it != buildings->end(); ++it ) {
 		std::cout << (*it).getname() << endl;
 
-	}
+	}*/
 
 	Graph g(buildings->size());
 
 	vector<Edge>::iterator ite;
 	for (ite = edges->begin(); ite != edges->end(); ++ite ) {
-		std::cout << (*ite).getSource().getname() << " " << (*ite).getDest().getname() << " " << (*ite).getWeight() << endl;
+		//std::cout << (*ite).getSource().getname() << " " << (*ite).getDest().getname() << " " << (*ite).getWeight() << endl;
 		g.AddEdge((*ite).getSource(), (*ite).getDest(), (*ite).getWeight());
 	}
 	

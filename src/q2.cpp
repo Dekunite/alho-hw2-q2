@@ -275,6 +275,7 @@ int main() {
 		//if building counter = 0, directly push buildings in to buildings vector.
 		if(buildingCounter == 0) {
 			newBuildingS = new Building(source, buildingCounter);
+			//assign first building to start vertex = Ma in test cases
 			startVertex = *newBuildingS;
 			buildings->push_back(*newBuildingS);
 			buildingCounter++;
